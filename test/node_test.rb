@@ -17,10 +17,6 @@ class NodeTest < Minitest::Test
     assert_equal nil, @node.remove_link
   end
 
-  def test_can_only_link_to_one_node
-    skip
-  end
-
   def test_next_node_defaults_to_nil
     assert_equal nil, @node.next_node
   end

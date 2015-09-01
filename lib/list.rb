@@ -15,7 +15,19 @@ class List
   end
 
   def tail
-    
+
+  end
+
+  def each_value
+    yield head.data
+    node = head.next_node
+    return if head.next_node.nil?
+
+    loop do
+      yield node.data
+      break if node.next_node == nil
+      node = node.next_node
+    end
   end
 
   def has_next_node?(node)
@@ -38,8 +50,11 @@ class List
   end
 
   def includes?(value)
-    # return true or false
-
+    return false if !head
+    self.each_value do |node_data|
+      return true if node_data == value
+    end
+    false
   end
 
   def pop
@@ -74,13 +89,14 @@ end
 list = List.new
 node = Node.new('1')
 node2 = Node.new('2')
-
-list.nodes
+node3 = Node.new('3')
 
 list.append(node)
-
-list.head
-
 list.append(node2)
+list.append(node3)
 
-list.head
+list.includes?('hi')
+
+list.each_value do |data|
+  data
+end

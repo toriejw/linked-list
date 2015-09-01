@@ -27,4 +27,11 @@ class ListTest < Minitest::Test
     assert_equal @node, @node2.next_node
   end
 
+  def test_can_find_a_value_in_the_list
+    @list.append(@node)
+    @list.append(@node2)
+    assert @list.includes?('1')
+    refute @list.includes?(2)
+  end
+
 end
