@@ -13,11 +13,15 @@ class Node
   end
 
   def add_link(node)
-    @next_node = node
+    self.next_node = node
   end
 
   def remove_link
     @next_node = nil
+  end
+
+  def tail?
+    self.next_node.nil?
   end
 
 end

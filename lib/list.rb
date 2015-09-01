@@ -3,23 +3,38 @@
 # Examples
 #
 
-require_relative './node'
+require_relative './node'  # => true
 
 class List
-  attr_accessor :head, :nodes
-  attr_writer :tail
+  attr_accessor :head, :nodes  # => nil
+  attr_writer :tail            # => nil
 
   def initialize
-    @head = nil
-    @tail = nil
-  end
+    @head = nil   # => nil
+    @tail = nil   # => nil
+  end             # => :initialize
 
   def tail
+    node = head
+    loop do
 
-  end
+    end
+  end    # => :tail
 
   def each_value
-    yield head.data
+    yield head.data                # => nil, "3"
+    node = head.next_node          # => #<Node:0x007f96f3026c00 @data="1", @next_node=#<Node:0x007f96f3026908 @data="2", @next_node=nil>>, #<Node:0x007f96f3026c00 @data="1", @next_node=#<Node:0x007f96f3026908 @data="2", @next_node=nil>>
+    return if head.next_node.nil?  # => false, false
+
+    loop do
+      yield node.data                 # => nil, nil, "1", "2"
+      break if node.next_node == nil  # => false, true, false, true
+      node = node.next_node           # => #<Node:0x007f96f3026908 @data="2", @next_node=nil>, #<Node:0x007f96f3026908 @data="2", @next_node=nil>
+    end                               # => nil, nil
+  end                                 # => :each_value
+
+  def each_next
+    yield head.next_node
     node = head.next_node
     return if head.next_node.nil?
 
@@ -28,75 +43,82 @@ class List
       break if node.next_node == nil
       node = node.next_node
     end
-  end
+  end                                 # => :each_next
 
   def has_next_node?(node)
     node.next_node
-  end
+  end                       # => :has_next_node?
 
   def append(node)
-    node.add_link(head) unless !head
-    self.head = node
-  end
+    if !head                                 # => true, false
+      self.head = node                           # => #<Node:0x007f96f3026c00 @data="1", @next_node=nil>
+    else
+      existing_node = head                       # => #<Node:0x007f96f3026c00 @data="1", @next_node=nil>
+      until existing_node.tail?                  # => true
+        existing_node = existing_node.next_node
+      end                                        # => nil
+      existing_node.next_node = node             # => #<Node:0x007f96f3026908 @data="2", @next_node=nil>
+    end                                          # => #<Node:0x007f96f3026c00 @data="1", @next_node=nil>, #<Node:0x007f96f3026908 @data="2", @next_node=nil>
+  end                                            # => :append
 
   def prepend(node)
-
-    # update tail
-  end
+    node.add_link(head) if head  # => #<Node:0x007f96f3026c00 @data="1", @next_node=#<Node:0x007f96f3026908 @data="2", @next_node=nil>>
+    self.head = node             # => #<Node:0x007f96f3026638 @data="3", @next_node=#<Node:0x007f96f3026c00 @data="1", @next_node=#<Node:0x007f96f3026908 @data="2", @next_node=nil>>>
+  end                            # => :prepend
 
   def insert(node, index)
 
     # update head and tail
-  end
+  end  # => :insert
 
   def includes?(value)
-    return false if !head
-    self.each_value do |node_data|
-      return true if node_data == value
-    end
-    false
-  end
+    return false unless head             # => #<Node:0x007f96f3026638 @data="3", @next_node=#<Node:0x007f96f3026c00 @data="1", @next_node=#<Node:0x007f96f3026908 @data="2", @next_node=nil>>>
+    each_value do |node_data|
+      return true if node_data == value  # => false, false, false
+    end                                  # => nil
+    false                                # => false
+  end                                    # => :includes?
 
   def pop
     # update tail
 
-  end
+  end  # => :pop
 
   def count
 
-  end
+  end  # => :count
 
   def find_by_index
 
-  end
+  end  # => :find_by_index
 
   def find_by_value
 
-  end
+  end  # => :find_by_value
 
   def remove_by_index
 
     # update head and tail
-  end
+  end  # => :remove_by_index
 
   def remove_by_value
     # updated head and tail
 
-  end
+  end  # => :remove_by_value
 
-end
+end  # => :remove_by_value
 
-list = List.new
-node = Node.new('1')
-node2 = Node.new('2')
-node3 = Node.new('3')
+list = List.new        # => #<List:0x007f96f30272b8 @head=nil, @tail=nil>
+node = Node.new('1')   # => #<Node:0x007f96f3026c00 @data="1", @next_node=nil>
+node2 = Node.new('2')  # => #<Node:0x007f96f3026908 @data="2", @next_node=nil>
+node3 = Node.new('3')  # => #<Node:0x007f96f3026638 @data="3", @next_node=nil>
 
-list.append(node)
-list.append(node2)
-list.append(node3)
+list.append(node)    # => #<Node:0x007f96f3026c00 @data="1", @next_node=nil>
+list.append(node2)   # => #<Node:0x007f96f3026908 @data="2", @next_node=nil>
+list.prepend(node3)  # => #<Node:0x007f96f3026638 @data="3", @next_node=#<Node:0x007f96f3026c00 @data="1", @next_node=#<Node:0x007f96f3026908 @data="2", @next_node=nil>>>
 
-list.includes?('hi')
+list.includes?('hi')  # => false
 
-list.each_value do |data|
-  data
-end
+list.each_value do |data|  # => #<List:0x007f96f30272b8 @head=#<Node:0x007f96f3026638 @data="3", @next_node=#<Node:0x007f96f3026c00 @data="1", @next_node=#<Node:0x007f96f3026908 @data="2", @next_node=nil>>>, @tail=nil>
+  data                     # => "3", "1", "2"
+end                        # => nil

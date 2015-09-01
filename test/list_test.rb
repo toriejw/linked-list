@@ -8,23 +8,34 @@ class ListTest < Minitest::Test
     @node2 = Node.new('2')
   end
 
-  def test_list_has_a_tail
+  def test_list_has_a_tail_that_defaults_to_nil
     skip
     assert_equal nil, @list.tail
+    @list.append(@node)
+    @list.append(@node2)
+    assert_equal @node2, @list.tail
   end
 
-  def test_list_has_a_head
+  def test_list_has_a_head_that_defaults_to_nil
     assert_equal nil, @list.head
     @list.append(@node)
     assert_equal @node, @list.head
   end
 
-  def test_can_append_a_node
-    @list.append(@node)
+  def test_can_prepend_a_node
+    @list.prepend(@node)
     assert_equal @node, @list.head
-    @list.append(@node2)
+    @list.prepend(@node2)
     assert_equal @node2, @list.head
     assert_equal @node, @node2.next_node
+  end
+
+  def test_can_apppend_a_node
+    @list.append(@node)
+    assert @node.tail?
+    @list.append(@node2)
+    assert @node2.tail?
+    assert_equal @node2, @node.next_node
   end
 
   def test_can_find_a_value_in_the_list
