@@ -6,7 +6,7 @@
 require_relative './node'
 
 class List
-  attr_accessor :head, :nodes
+  attr_accessor :head
   attr_writer :tail
 
   def initialize
@@ -26,6 +26,8 @@ class List
   end
 
   def each_value
+    return nil if !head
+
     yield head.data
     node = head.next_node
     return if head.next_node.nil?
@@ -36,18 +38,6 @@ class List
       node = node.next_node
     end
   end
-
-  # def each_next
-  #   yield head.next_node
-  #   node = head.next_node
-  #   return if head.next_node.nil?
-  #
-  #   loop do
-  #     yield node.data
-  #     break if node.next_node == nil
-  #     node = node.next_node
-  #   end
-  # end
 
   def has_next_node?(node)
     node.next_node
@@ -71,8 +61,23 @@ class List
   end
 
   def insert(node, index)
-
-    # update head and tail
+    if index > self.count + 1
+      warn("Index is outside of the bounds of the list. Node not inserted.")
+    elsif index == 0
+      self.prepend(node)
+    else
+      node_index = 1
+      previous_node = self.head
+      loop do
+        if node_index == index
+          node.add_link(previous_node.next_node)
+          previous_node.add_link(node)
+          break
+        end
+        node_index += 1
+        previous_node = previous_node.next_node
+      end
+    end
   end
 
   def includes?(value)
@@ -96,7 +101,9 @@ class List
   end
 
   def count
-
+    values = []
+    self.each_value { |value| values << value }
+    values.size
   end
 
   def find_by_index
@@ -124,8 +131,6 @@ node2 = Node.new('2')
 node3 = Node.new('3')
 
 list.append(node)
-list.append(node2)
-list.pop
-list.tail
-
+list.insert(node2, 1)
+list.insert(node3, 2)
 list.tail
