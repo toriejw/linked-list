@@ -98,4 +98,13 @@ class ListTest < Minitest::Test
     assert_equal '1', @list.find_by_index(0)
   end
 
+  def test_can_find_and_return_index_of_a_given_value
+    @list.append(@node)
+    @list.append(@node2)
+    @list.append(@node3)
+
+    assert_equal 1, @list.find_by_value('2')
+    assert_equal 2, @list.find_by_value('3')
+  end
+
 end
