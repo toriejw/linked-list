@@ -9,7 +9,6 @@ class ListTest < Minitest::Test
   end
 
   def test_list_has_a_tail_that_defaults_to_nil
-    skip
     assert_equal nil, @list.tail
     @list.append(@node)
     @list.append(@node2)
@@ -43,6 +42,14 @@ class ListTest < Minitest::Test
     @list.append(@node2)
     assert @list.includes?('1')
     refute @list.includes?(2)
+  end
+
+  def test_can_remove_and_return_last_node
+    @list.append(@node)
+    @list.append(@node2)
+    returned_node = @list.pop
+    assert_equal @node, @list.tail
+    assert_equal @node2, returned_node
   end
 
 end
