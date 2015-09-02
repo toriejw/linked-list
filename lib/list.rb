@@ -106,8 +106,14 @@ class List
     values.size
   end
 
-  def find_by_index
-
+  def find_by_index(index)
+    current_node = self.head
+    0.upto(self.count - 1) do |current_index|
+      if current_index == index
+        return current_node.data
+      end
+      current_node = current_node.next_node
+    end
   end
 
   def find_by_value
@@ -133,4 +139,5 @@ node3 = Node.new('3')
 list.append(node)
 list.insert(node2, 1)
 list.insert(node3, 2)
-list.tail
+
+list.find_by_index(1)
