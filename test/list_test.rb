@@ -107,4 +107,37 @@ class ListTest < Minitest::Test
     assert_equal 2, @list.find_by_value('3')
   end
 
+  def test_can_remove_node_by_index
+    @list.append(@node)
+    @list.append(@node2)
+    @list.append(@node3)
+
+    @list.remove_by_index(2)
+    assert_equal @node2, @list.tail
+
+    @list.remove_by_index(0)
+    assert_equal @node2, @list.head
+  end
+
+  def test_can_remove_node_by_value
+    @list.append(@node)
+    @list.append(@node2)
+    @list.append(@node3)
+
+    @list.remove_by_value('2')
+    assert_equal @node3, @list.tail
+
+    @list.remove_by_value('1')
+    assert_equal @node3, @list.head
+  end
+
+  def test_can_compute_distance_between_2_nodes
+    @list.append(@node)
+    @list.append(@node2)
+    @list.append(@node3)
+
+    assert_equal 1, @list.distance(@node, @node2)
+    assert_equal 2, @list.distance(@node, @node3)
+  end
+
 end

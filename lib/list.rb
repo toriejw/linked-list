@@ -3,82 +3,76 @@
 # Examples
 #
 
-require_relative './node'  # => true
+require_relative './node'
 
 class List
-  attr_accessor :head  # => nil
-  attr_writer :tail    # => nil
+  attr_accessor :head
+  attr_writer :tail
 
   def initialize
-    @head = nil   # => nil
-    @tail = nil   # => nil
-  end             # => :initialize
+    @head = nil
+    @tail = nil
+  end
 
   def tail
     return nil if head.nil?
-    return head if head.tail?
 
-    node = head.next_node
+    node = head
     until node.tail?
       node = node.next_node
     end
     node
-  end                        # => :tail
+  end
 
-  def each_value
-    return nil if !head  # => false, false, false
+  def each_value(skip_first = false)
+    return nil unless head
 
-    yield head.data                # => ["1"], ["1"], 1
-    node = head.next_node          # => nil, #<Node:0x007ff96a834238 @data="2", @next_node=nil>, #<Node:0x007ff96a834238 @data="2", @next_node=#<Node:0x007ff96a8354d0 @data="3", @next_node=nil>>
-    return if head.next_node.nil?  # => true, false, false
+    yield head.data unless skip_first
+    node = head.next_node
 
     loop do
-      yield node.data                 # => ["1", "2"]
-      break if node.next_node == nil  # => true
+      break if node.nil?
+      yield node.data
       node = node.next_node
-    end                               # => nil
-  end                                 # => :each_value
-
-  def has_next_node?(node)
-    node.next_node
-  end                       # => :has_next_node?
+    end
+  end
 
   def append(node)
-    if !head                                     # => true
-      self.head = node                           # => #<Node:0x007ff96a834490 @data="1", @next_node=nil>
+    if !head
+      self.head = node
     else
       existing_node = head
       until existing_node.tail?
         existing_node = existing_node.next_node
       end
       existing_node.next_node = node
-    end                                          # => #<Node:0x007ff96a834490 @data="1", @next_node=nil>
-  end                                            # => :append
+    end
+  end
 
   def prepend(node)
     node.add_link(head) if head
     self.head = node
-  end                            # => :prepend
+  end
 
   def insert(node, index)
-    if index > self.count + 1                                                 # => false, false
+    if index > count + 1
       warn("Index is outside of the bounds of the list. Node not inserted.")
-    elsif index == 0                                                          # => false, false
-      self.prepend(node)
+    elsif index == 0
+      prepend(node)
     else
-      node_index = 1                                                          # => 1, 1
-      previous_node = self.head                                               # => #<Node:0x007ff96a834490 @data="1", @next_node=nil>, #<Node:0x007ff96a834490 @data="1", @next_node=#<Node:0x007ff96a834238 @data="2", @next_node=nil>>
+      node_index = 1
+      previous_node = head
       loop do
-        if node_index == index                                                # => true, false, true
-          node.add_link(previous_node.next_node)                              # => nil, nil
-          previous_node.add_link(node)                                        # => #<Node:0x007ff96a834238 @data="2", @next_node=nil>, #<Node:0x007ff96a8354d0 @data="3", @next_node=nil>
+        if node_index == index
+          node.add_link(previous_node.next_node)
+          previous_node.add_link(node)
           break
         end
-        node_index += 1                                                       # => 2
-        previous_node = previous_node.next_node                               # => #<Node:0x007ff96a834238 @data="2", @next_node=nil>
-      end                                                                     # => nil, nil
-    end                                                                       # => nil, nil
-  end                                                                         # => :insert
+        node_index += 1
+        previous_node = previous_node.next_node
+      end
+    end
+  end
 
   def includes?(value)
     return false unless head
@@ -86,63 +80,74 @@ class List
       return true if node_data == value
     end
     false
-  end                                    # => :includes?
+  end
 
   def pop
-    if head
-      existing_node = head
-      until existing_node.next_node.tail?
-        existing_node = existing_node.next_node
-      end
-      popped_node = existing_node.next_node
-      existing_node.remove_link
-      popped_node
+    return unless head
+    existing_node = head
+    until existing_node.next_node.tail?
+      existing_node = existing_node.next_node
     end
-  end                                            # => :pop
+    popped_node = existing_node.next_node
+    existing_node.remove_link
+    popped_node
+  end
 
   def count
-    values = []                                  # => [], []
-    self.each_value { |value| values << value }  # => nil, nil
-    values.size                                  # => 1, 2
-  end                                            # => :count
+    values = []
+    each_value { |value| values << value }
+    values.size
+  end
 
   def find_by_index(index)
-    current_node = self.head
-    0.upto(self.count - 1) do |current_index|
-      if current_index == index
-        return current_node.data
-      end
+    current_node = head
+    0.upto(count - 1) do |current_index|
+      return current_node.data if current_index == index
       current_node = current_node.next_node
     end
-  end                                          # => :find_by_index
+  end
 
   def find_by_value(value)
-    current_index = 0                                 # => 0
-    self.each_value do |current_value|                # => #<List:0x007ff96a834aa8 @head=#<Node:0x007ff96a834490 @data="1", @next_node=#<Node:0x007ff96a834238 @data="2", @next_node=#<Node:0x007ff96a8354d0 @data="3", @next_node=nil>>>, @tail=nil>
-      return current_index if current_value == value  # => false, true
-      current_index += 1                              # => 1
+    current_index = 0
+    each_value do |current_value|
+      return current_index if current_value == value
+      current_index += 1
     end
-  end                                                 # => :find_by_value
+  end
 
-  def remove_by_index
-    # update head and tail
+  def remove_by_index(index)
+    if index == 0
+      self.head = head.next_node
+    else
+      previous_node = head
+      1.upto(count - 1) do |current_index|
+        previous_node.add_link(previous_node.next_node.next_node) if current_index == index
+        previous_node = previous_node.next_node
+      end
+    end
+  end
 
-  end  # => :remove_by_index
+  def remove_by_value(value)
+    self.head = head.next_node if head.data == value
 
-  def remove_by_value
-    # updated head and tail
+    previous_node = head
+    each_value(skip_first = true) do |current_value|
+      previous_node.add_link(previous_node.next_node.next_node) if current_value == value
+      previous_node = previous_node.next_node
+    end
+  end
 
-  end  # => :remove_by_value
+  def distance(node1, node2)
+    first_index  = nil
+    second_index = nil
 
-end  # => :remove_by_value
+    current_node = head
+    0.upto(count - 1) do |current_index|
+      first_index  = current_index if current_node == node1
+      second_index = current_index if current_node == node2
+      current_node = current_node.next_node
+    end
 
-list = List.new        # => #<List:0x007ff96a834aa8 @head=nil, @tail=nil>
-node = Node.new('1')   # => #<Node:0x007ff96a834490 @data="1", @next_node=nil>
-node2 = Node.new('2')  # => #<Node:0x007ff96a834238 @data="2", @next_node=nil>
-node3 = Node.new('3')  # => #<Node:0x007ff96a8354d0 @data="3", @next_node=nil>
-
-list.append(node)      # => #<Node:0x007ff96a834490 @data="1", @next_node=nil>
-list.insert(node2, 1)  # => nil
-list.insert(node3, 2)  # => nil
-
-list.find_by_value('2')  # => 1
+    (second_index - first_index).abs
+  end
+end
